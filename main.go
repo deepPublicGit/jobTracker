@@ -19,6 +19,12 @@ type Job struct {
 
 func main() {
 
+	//scrapeGreenHouse()
+	jobs, _ := scrapePlainHTML("https://www.workatastartup.com/companies?demographic=any&hasEquity=any&hasSalary=any&industry=any&interviewProcess=any&jobType=any&layout=list-compact&sortBy=created_desc&tab=any&usVisaNotRequired=any")
+	log.Printf("Headout Jobs: %s\n", jobs)
+}
+
+func scrapeGreenHouse() {
 	fName := "ghtest.csv"
 	file, err := os.Create(fName)
 	if err != nil {
@@ -95,4 +101,40 @@ func main() {
 
 	log.Printf("Scraping finished, check file %q for results\n", fName)
 	log.Printf("Done. Jobs: %d\n, %s", len(jobs), jobs)
+}
+
+func scrapePlainHTML(url string) ([]Job, error) {
+	var jobs []Job
+	c := colly.NewCollector(
+		//colly.AllowedDomains("headout.com"),
+
+		// Cache responses to prevent multiple download of pages
+		// even if the collector is restarted
+		colly.CacheDir("./generic_cache"),
+	)
+
+	c.OnHTML("a", func(e *colly.HTMLElement) {
+
+		title := e.Text
+		link := e.Attr("href")
+		roles := []string{"software", "engineer", "developer", "sde", "swe", "java", "backend"}
+		log.Printf("Scraping link: %s, %q\n, ", title, link)
+		//log.Printf("Raw: %s", e.Text)
+
+		for _, role := range roles {
+			if strings.Contains(strings.ToLower(title), role) {
+				jobs = append(jobs, Job{
+					Title:    strings.TrimSpace(title),
+					URL:      e.Request.AbsoluteURL(link),
+					Location: "",
+					Date:     time.Now(),
+				})
+				break
+			}
+		}
+
+	})
+
+	err := c.Visit(url)
+	return jobs, err
 }
