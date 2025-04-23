@@ -19,7 +19,7 @@ func main() {
 		),
 		gocron.NewTask(func() {
 			log.Println("Starting Scraping Scheduler")
-			scrapers.ScrapeGreenHouse()
+			scrapers.ScrapeGreenHouse("https://job-boards.greenhouse.io/workatbackbase/")
 			jobs, _ := scrapers.ScrapePlainHTML("https://www.workatastartup.com/companies?demographic=any&hasEquity=any&hasSalary=any&industry=any&interviewProcess=any&jobType=any&layout=list-compact&sortBy=created_desc&tab=any&usVisaNotRequired=any")
 			log.Printf("Headout Jobs: %s\n", jobs)
 		}),

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func ScrapeGreenHouse() {
+func ScrapeGreenHouse(url string) {
 	fName := "ghtest.csv"
 	file, err := os.Create(fName)
 	if err != nil {
@@ -84,7 +84,7 @@ func ScrapeGreenHouse() {
 	})
 	log.Printf("Collector starting...")
 
-	c.Visit("https://job-boards.greenhouse.io/workatbackbase/")
+	c.Visit(url)
 
 	log.Printf("Scraping finished, check file %q for results\n", fName)
 	log.Printf("Done. Jobs: %d\n, %s", len(jobs), jobs)
